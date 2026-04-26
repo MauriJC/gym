@@ -27,6 +27,13 @@ export const Colors = {
   },
 };
 
+export const BorderRadius = {
+  sm: 8,
+  md: 12,
+  lg: 20,
+  xl: 28,
+} as const;
+
 export const Fonts = Platform.select({
   ios: {
     /** iOS `UIFontDescriptorSystemDesignDefault` */

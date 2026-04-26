@@ -2,6 +2,8 @@ import { StyleSheet, View } from "react-native";
 import { ThemedText } from "@/components/themed-text";
 //import { Link } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { router } from "expo-router";
+import { ActionCard } from "@/components/ui/action-card";
 
 export default function HomeScreen() {
   return (
@@ -10,6 +12,14 @@ export default function HomeScreen() {
         <ThemedText type="title">GymTrack!</ThemedText>
         <ThemedText>Tu progreso, tu fuerza</ThemedText>
       </View>
+
+      <ActionCard
+        title="Listo para entrenar?"
+        description="Iniciar entrenamiento"
+        iconName="play"
+        onPress={() => router.push("/(tabs)/sessions")}
+      />
+
       {/*  
       Dejo comentado esto para usarlo de guia despues
       <View style={styles.stepContainer}>
