@@ -7,7 +7,8 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.titleContainer}>
-        <ThemedText type="title">Gym tracker app!</ThemedText>
+        <ThemedText type="title">GymTrack!</ThemedText>
+        <ThemedText>Tu progreso, tu fuerza</ThemedText>
       </View>
       {/*  
       Dejo comentado esto para usarlo de guia despues
@@ -25,12 +26,12 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    padding: 16,
   },
   titleContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: "column",
+    justifyContent: "flex-start",
+    alignItems: "flex-start",
     gap: 8,
   },
   stepContainer: {

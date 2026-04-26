@@ -41,6 +41,15 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="sessions"
+        options={{
+          title: "Sesiones",
+          tabBarIcon: ({ color }) => (
+            <MaterialCommunityIcons name="dumbbell" size={24} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="historial"
         options={{
           title: "Historial",
