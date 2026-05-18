@@ -43,7 +43,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="sessions"
         options={{
-          title: "Sesiones",
+          title: "Sesión activa",
           tabBarIcon: ({ color }) => (
             <MaterialCommunityIcons name="dumbbell" size={24} color={color} />
           ),
