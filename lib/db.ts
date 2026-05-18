@@ -6,7 +6,7 @@ type UserVersionRow = {
 
 // Single source of truth for DB filename and latest schema version.
 const DATABASE_NAME: string = "gym.db";
-const SCHEMA_VERSION: number = 1;
+const SCHEMA_VERSION: number = 3;
 
 // Cached connection to avoid opening multiple DB handles.
 let databaseInstance: SQLite.SQLiteDatabase | null = null;
@@ -55,6 +55,48 @@ const createV1Schema = async (
   `);
 };
 
+const migrateToV2 = async (
+  database: SQLite.SQLiteDatabase,
+): Promise<void> => {
+  await database.execAsync(`
+    ALTER TABLE sessions ADD COLUMN status INTEGER NOT NULL DEFAULT 1
+      CHECK (status IN (1, 2, 3));
+  `);
+};
+
+const migrateToV3 = async (
+  database: SQLite.SQLiteDatabase,
+): Promise<void> => {
+  // Drops Paused: map old 2→Active, old 3→Finalized (2); rebuild for CHECK (1, 2).
+  await database.execAsync(`
+    PRAGMA foreign_keys = OFF;
+
+    CREATE TABLE sessions_new (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      date TEXT NOT NULL,
+      notes TEXT CHECK (length(notes) <= 300),
+      status INTEGER NOT NULL DEFAULT 1 CHECK (status IN (1, 2))
+    );
+
+    INSERT INTO sessions_new (id, date, notes, status)
+    SELECT
+      id,
+      date,
+      notes,
+      CASE status
+        WHEN 3 THEN 2
+        WHEN 2 THEN 1
+        ELSE status
+      END
+    FROM sessions;
+
+    DROP TABLE sessions;
+    ALTER TABLE sessions_new RENAME TO sessions;
+
+    PRAGMA foreign_keys = ON;
+  `);
+};
+
 const getCurrentSchemaVersion = async (
   database: SQLite.SQLiteDatabase,
 ): Promise<number> => {
@@ -90,9 +132,23 @@ export const runMigrations = async (
   const currentVersion: number = await getCurrentSchemaVersion(database);
 
   // Sequential migrations let us upgrade old installs safely.
-  if (currentVersion < 1) {
+  let version: number = currentVersion;
+
+  if (version < 1) {
     await createV1Schema(database);
     await setSchemaVersion(database, 1);
+    version = 1;
+  }
+
+  if (version < 2) {
+    await migrateToV2(database);
+    await setSchemaVersion(database, 2);
+    version = 2;
+  }
+
+  if (version < 3) {
+    await migrateToV3(database);
+    await setSchemaVersion(database, 3);
   }
 };
 

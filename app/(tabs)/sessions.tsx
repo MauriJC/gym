@@ -5,17 +5,17 @@ import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const Sessions = () => {
-  const activeSessionId = useTrainingSessionStore(
-    (state) => state.activeSessionId,
+  const currentSessionId = useTrainingSessionStore(
+    (state) => state.currentSessionId,
   );
 
   return (
     <SafeAreaView>
       <ThemedText>Sesiones</ThemedText>
-      {activeSessionId !== null ? (
-        <ThemedText>Sesión activa ID: {activeSessionId}</ThemedText>
+      {currentSessionId !== null ? (
+        <ThemedText>Sesión seleccionada ID: {currentSessionId}</ThemedText>
       ) : (
-        <ThemedText>No hay sesión activa</ThemedText>
+        <ThemedText>No hay sesión seleccionada</ThemedText>
       )}
     </SafeAreaView>
   );
