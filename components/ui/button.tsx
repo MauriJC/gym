@@ -1,4 +1,5 @@
-import { ReactNode } from "react";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { ComponentProps } from "react";
 import {
   Pressable,
   StyleProp,
@@ -9,32 +10,62 @@ import {
 
 import { ThemedText } from "@/components/themed-text";
 import { BorderRadius, Colors } from "@/constants/theme";
+import { useColorScheme } from "@/hooks/use-color-scheme";
+
+type MaterialIconName = ComponentProps<typeof MaterialCommunityIcons>["name"];
 
 type ButtonProps = {
   title: string;
   onPress: () => void;
-  icon?: ReactNode;
+  iconName?: MaterialIconName;
+  iconSize?: number;
   style?: StyleProp<ViewStyle>;
   disabled?: boolean;
 };
 
-export function Button({ title, onPress, icon, style, disabled }: ButtonProps) {
+function getButtonContentColor(colorScheme: "light" | "dark") {
+  if (colorScheme === "dark") {
+    return Colors.light.text;
+  }
+
+  return Colors.dark.text;
+}
+
+export function Button({
+  title,
+  onPress,
+  iconName,
+  iconSize = 24,
+  style,
+  disabled,
+}: ButtonProps) {
+  const colorScheme = useColorScheme() ?? "light";
+  const isDark = colorScheme === "dark";
+  const contentColor = getButtonContentColor(colorScheme);
+
   return (
     <Pressable
       onPress={onPress}
       disabled={disabled}
       style={({ pressed }) => [
         styles.button,
+        isDark ? styles.buttonDark : styles.buttonLight,
         pressed && styles.pressed,
         disabled && styles.disabled,
         style,
       ]}
     >
       <View style={styles.content}>
-        <ThemedText style={styles.label} type="defaultSemiBold">
+        <ThemedText type="defaultSemiBold" style={{ color: contentColor }}>
           {title}
         </ThemedText>
-        {icon}
+        {iconName && (
+          <MaterialCommunityIcons
+            name={iconName}
+            size={iconSize}
+            color={contentColor}
+          />
+        )}
       </View>
     </Pressable>
   );
@@ -42,20 +73,22 @@ export function Button({ title, onPress, icon, style, disabled }: ButtonProps) {
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: Colors.dark.background,
-    borderRadius: BorderRadius.lg,
+    borderRadius: BorderRadius.md,
     paddingVertical: 10,
     paddingHorizontal: 20,
     alignItems: "center",
     justifyContent: "center",
   },
+  buttonLight: {
+    backgroundColor: Colors.dark.background,
+  },
+  buttonDark: {
+    backgroundColor: Colors.light.background,
+  },
   content: {
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
-  },
-  label: {
-    color: Colors.dark.text,
   },
   pressed: {
     opacity: 0.85,

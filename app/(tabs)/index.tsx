@@ -1,19 +1,20 @@
-import { useCallback, useState } from "react";
-import { Alert, ScrollView, StyleSheet, View } from "react-native";
 import { ThemedText } from "@/components/themed-text";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { router } from "expo-router";
-import { useFocusEffect } from "@react-navigation/native";
 import { ActionCard } from "@/components/ui/action-card";
-import { formatSessionDateDescription } from "@/lib/utils/utils";
 import {
-  getActiveSessions,
+  getMostRecentActiveSession,
   SessionRow,
 } from "@/lib/repositories/sessions.repository";
+import { formatSessionDateDescription } from "@/lib/utils/utils";
 import { useTrainingSessionStore } from "@/stores/training-session-store";
+import { useFocusEffect } from "@react-navigation/native";
+import { router } from "expo-router";
+import { useCallback, useState } from "react";
+import { Alert, ScrollView, StyleSheet, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
-  const [activeSessions, setActiveSessions] = useState<SessionRow[]>([]);
+  const [mostRecentActiveSession, setMostRecentActiveSession] =
+    useState<SessionRow | null>(null);
 
   const startTrainingSession = useTrainingSessionStore(
     (state) => state.startTrainingSession,
@@ -23,20 +24,20 @@ export default function HomeScreen() {
   );
 
   // Esto deberia ir a un hook
-  const loadActiveSessions = useCallback((): void => {
-    getActiveSessions()
-      .then((sessions: SessionRow[]) => {
-        setActiveSessions(sessions);
+  const loadMostRecentActiveSession = useCallback((): void => {
+    getMostRecentActiveSession()
+      .then((session: SessionRow | null) => {
+        setMostRecentActiveSession(session);
       })
       .catch((error: unknown): void => {
-        console.error("Failed to load active sessions", error);
+        console.error("Failed to load most recent active session", error);
       });
   }, []);
 
   useFocusEffect(
     useCallback((): void => {
-      loadActiveSessions();
-    }, [loadActiveSessions]),
+      loadMostRecentActiveSession();
+    }, [loadMostRecentActiveSession]),
   );
 
   const handleContinueSession = (sessionId: number): void => {
@@ -75,17 +76,18 @@ export default function HomeScreen() {
           <ThemedText>Tu progreso, tu fuerza</ThemedText>
         </View>
 
-        {activeSessions.map((session: SessionRow) => (
+        {mostRecentActiveSession !== null && (
           <ActionCard
-            key={session.id}
             title="Continuar entrenamiento?"
-            description={formatSessionDateDescription(session.date)}
-            iconName="play-circle"
+            description={formatSessionDateDescription(
+              mostRecentActiveSession.date,
+            )}
+            iconName="play"
             onPress={(): void => {
-              handleContinueSession(session.id);
+              handleContinueSession(mostRecentActiveSession.id);
             }}
           />
-        ))}
+        )}
 
         <ActionCard
           title="Listo para entrenar?"

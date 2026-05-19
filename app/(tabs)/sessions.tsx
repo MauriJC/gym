@@ -1,9 +1,7 @@
 import { ThemedText } from "@/components/themed-text";
 import { ActionCard } from "@/components/ui/action-card";
 import { Button } from "@/components/ui/button";
-import { Colors } from "@/constants/theme";
 import { useTrainingSessionStore } from "@/stores/training-session-store";
-import MaterialCommunityIcons from "@expo/vector-icons/build/MaterialCommunityIcons";
 
 import React from "react";
 import { ScrollView, StyleSheet } from "react-native";
@@ -39,13 +37,7 @@ const Sessions = () => {
         <Button
           style={styles.footerButton}
           title="FINALIZAR SESIÓN"
-          icon={
-            <MaterialCommunityIcons
-              name="flag-checkered"
-              size={24}
-              color={Colors.dark.text}
-            />
-          }
+          iconName="flag-checkered"
           onPress={() => {
             console.log("Finalizando session");
           }}

@@ -34,3 +34,13 @@ export const getActiveSessions = async (): Promise<SessionRow[]> => {
 
   return rows;
 };
+
+export const getMostRecentActiveSession = async (): Promise<SessionRow | null> => {
+  const database = await openDb();
+  const row = await database.getFirstAsync<SessionRow>(
+    "SELECT id, date, notes, status FROM sessions WHERE status = ? ORDER BY date DESC LIMIT 1",
+    SessionStatus.Active,
+  );
+
+  return row ?? null;
+};
