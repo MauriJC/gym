@@ -28,6 +28,15 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="sessions"
+        options={{
+          title: "Sesión activa",
+          tabBarIcon: ({ color }) => (
+            <MaterialCommunityIcons name="dumbbell" size={24} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="explore"
         options={{
           title: "Rutinas",
@@ -37,15 +46,6 @@ export default function TabLayout() {
               size={24}
               color={color}
             />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="sessions"
-        options={{
-          title: "Sesión activa",
-          tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="dumbbell" size={24} color={color} />
           ),
         }}
       />
